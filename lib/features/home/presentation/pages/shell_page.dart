@@ -23,7 +23,7 @@ class ShellPage extends StatelessWidget {
             extendBodyBehindAppBar: true,
             extendBody: true,
             appBar: appBar(context),
-            drawer: Drawer(),
+            drawer: drawer(context),
             body: child,
             bottomNavigationBar: SafeArea(
               child: Container(
@@ -124,7 +124,6 @@ class ShellPage extends StatelessWidget {
       style: TextStyle(
         fontFamily: 'Poppins',
         color: ThemeConstants.backgroundColor,
-        fontWeight: FontWeight.bold,
       ),
     ),
     centerTitle: false,
@@ -135,6 +134,18 @@ class ShellPage extends StatelessWidget {
           icon: PhosphorIcon(PhosphorIcons.list(PhosphorIconsStyle.regular)),
         );
       },
+    ),
+  );
+
+  Drawer drawer(BuildContext context) => Drawer(
+    child: Column(
+      children: [
+        ListTile(
+          leading: const Icon(Icons.exit_to_app),
+          title: const Text('exit'),
+          onTap: () => context.go('/auth'),
+        ),
+      ],
     ),
   );
 }
