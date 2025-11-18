@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hey_smile/features/auth/presentation/pages/auth_page.dart';
 import 'package:hey_smile/features/auth/presentation/pages/log_in_page.dart';
 import 'package:hey_smile/features/auth/presentation/pages/sign_up_page.dart';
+import 'package:hey_smile/features/camera/presentation/pages/camera_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/shell_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/home_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/tracker_page.dart';
@@ -62,6 +63,8 @@ class RouterManager {
         path: '/capture',
         builder: (context, state) => const CapturePage(),
       ),
+
+      GoRoute(path: '/camera', builder: (context, state) => const CameraPage()),
 
       GoRoute(
         path: '/auth',
