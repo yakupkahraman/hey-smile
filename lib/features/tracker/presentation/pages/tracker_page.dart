@@ -202,6 +202,11 @@ class _TrackerPageState extends State<TrackerPage>
                     formatButtonVisible: _isCalendarExpanded,
                     titleCentered: true,
                   ),
+                  availableCalendarFormats: const {
+                    CalendarFormat.month: 'Week',
+                    CalendarFormat.twoWeeks: 'Month',
+                    CalendarFormat.week: '2 Weeks',
+                  },
                 ),
               ),
             ),
@@ -312,7 +317,7 @@ class _TrackerPageState extends State<TrackerPage>
         ),
       ),
       floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 90.0),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         child: FloatingActionBubble(
           items: <Bubble>[
             Bubble(

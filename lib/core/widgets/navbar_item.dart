@@ -17,7 +17,9 @@ class NavItem extends StatefulWidget {
     required this.isSelected,
     required this.onTap,
     required this.unSelectedIcon,
-    required this.selectedIcon,this.label, this.centerItem,
+    required this.selectedIcon,
+    this.label,
+    this.centerItem,
   });
 
   @override
@@ -41,17 +43,21 @@ class _NavItemState extends State<NavItem> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              PhosphorIcon(widget.isSelected ? widget.selectedIcon : widget.unSelectedIcon, color: widget.isSelected ? Colors.white : (widget.centerItem == true ? Colors.white : Colors.grey),),
+              PhosphorIcon(
+                widget.isSelected ? widget.selectedIcon : widget.unSelectedIcon,
+                size: 26,
+                color: widget.isSelected
+                    ? Colors.white
+                    : (widget.centerItem == true ? Colors.white : Colors.grey),
+              ),
               if (widget.centerItem != true && widget.label != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
                     widget.label!,
                     style: TextStyle(
-                      color: widget.isSelected
-                          ? Colors.white
-                          : Colors.grey,
-                      fontSize: 12,
+                      color: widget.isSelected ? Colors.white : Colors.grey,
+                      fontSize: 9,
                       fontFamily: 'Poppins',
                     ),
                   ),

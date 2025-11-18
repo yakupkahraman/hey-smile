@@ -28,7 +28,7 @@ class ShellPage extends StatelessWidget {
             body: child,
             bottomNavigationBar: SafeArea(
               child: Container(
-                height: 84,
+                height: 76,
                 decoration: BoxDecoration(
                   color: ThemeConstants.primaryColor,
                   boxShadow: [
@@ -40,72 +40,79 @@ class ShellPage extends StatelessWidget {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      NavItem(
-                        index: 0,
-                        label: 'Home',
-                        isSelected: currentLocation == '/home',
-                        onTap: () => context.go('/home'),
-                        unSelectedIcon: PhosphorIcons.house(
-                          PhosphorIconsStyle.regular,
-                        ),
-                        selectedIcon: PhosphorIcons.house(
-                          PhosphorIconsStyle.fill,
-                        ),
-                      ),
-                      NavItem(
-                        index: 1,
-                        label: 'Tracker',
-                        isSelected: currentLocation == '/tracker',
-                        onTap: () => context.go('/tracker'),
-                        unSelectedIcon: PhosphorIcons.calendar(
-                          PhosphorIconsStyle.regular,
-                        ),
-                        selectedIcon: PhosphorIcons.calendar(
-                          PhosphorIconsStyle.fill,
+                      Expanded(
+                        child: NavItem(
+                          index: 0,
+                          label: 'Home',
+                          isSelected: currentLocation == '/home',
+                          onTap: () => context.go('/home'),
+                          unSelectedIcon: PhosphorIcons.house(
+                            PhosphorIconsStyle.regular,
+                          ),
+                          selectedIcon: PhosphorIcons.house(
+                            PhosphorIconsStyle.fill,
+                          ),
                         ),
                       ),
-                      NavItem(
-                        index: 2,
-                        isSelected: currentLocation == '/capture',
-                        onTap: () => context.push('/capture'),
-                        unSelectedIcon: PhosphorIcons.camera(
-                          PhosphorIconsStyle.regular,
-                        ),
-                        selectedIcon: PhosphorIcons.camera(
-                          PhosphorIconsStyle.fill,
-                        ),
-                        centerItem: true,
-                      ),
-                      NavItem(
-                        index: 3,
-                        label: 'Treatments',
-                        isSelected: currentLocation == '/treatments',
-                        onTap: () => context.go('/treatments'),
-                        unSelectedIcon: PhosphorIcons.heartbeat(
-                          PhosphorIconsStyle.regular,
-                        ),
-                        selectedIcon: PhosphorIcons.heartbeat(
-                          PhosphorIconsStyle.fill,
+                      Expanded(
+                        child: NavItem(
+                          index: 1,
+                          label: 'Tracker',
+                          isSelected: currentLocation == '/tracker',
+                          onTap: () => context.go('/tracker'),
+                          unSelectedIcon: PhosphorIcons.calendar(
+                            PhosphorIconsStyle.regular,
+                          ),
+                          selectedIcon: PhosphorIcons.calendar(
+                            PhosphorIconsStyle.fill,
+                          ),
                         ),
                       ),
-                      NavItem(
-                        index: 4,
-                        label: 'Shop',
-                        isSelected: currentLocation == '/shop',
-                        onTap: () => context.go('/shop'),
-                        unSelectedIcon: PhosphorIcons.shoppingCart(
-                          PhosphorIconsStyle.regular,
+                      Expanded(
+                        child: NavItem(
+                          index: 2,
+                          isSelected: currentLocation == '/capture',
+                          onTap: () => context.push('/capture'),
+                          unSelectedIcon: PhosphorIcons.camera(
+                            PhosphorIconsStyle.regular,
+                          ),
+                          selectedIcon: PhosphorIcons.camera(
+                            PhosphorIconsStyle.fill,
+                          ),
+                          centerItem: true,
                         ),
-                        selectedIcon: PhosphorIcons.shoppingCart(
-                          PhosphorIconsStyle.fill,
+                      ),
+                      Expanded(
+                        child: NavItem(
+                          index: 3,
+                          label: 'Treatments',
+                          isSelected: currentLocation == '/treatments',
+                          onTap: () => context.go('/treatments'),
+                          unSelectedIcon: PhosphorIcons.heartbeat(
+                            PhosphorIconsStyle.regular,
+                          ),
+                          selectedIcon: PhosphorIcons.heartbeat(
+                            PhosphorIconsStyle.fill,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: NavItem(
+                          index: 4,
+                          label: 'Hair Care',
+                          isSelected: currentLocation == '/shop',
+                          onTap: () => context.go('/shop'),
+                          unSelectedIcon: PhosphorIcons.shoppingCart(
+                            PhosphorIconsStyle.regular,
+                          ),
+                          selectedIcon: PhosphorIcons.shoppingCart(
+                            PhosphorIconsStyle.fill,
+                          ),
                         ),
                       ),
                     ],
@@ -121,7 +128,7 @@ class ShellPage extends StatelessWidget {
 
   AppBar appBar(BuildContext context) => AppBar(
     title: const Text(
-      'HeySmile',
+      'heySMILE',
       style: TextStyle(
         fontFamily: 'Poppins',
         color: ThemeConstants.backgroundColor,
