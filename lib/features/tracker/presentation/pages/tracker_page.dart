@@ -184,15 +184,17 @@ class _TrackerPageState extends State<TrackerPage>
                   },
                   calendarStyle: CalendarStyle(
                     todayDecoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
-                    selectedDecoration: const BoxDecoration(
-                      color: Colors.blue,
+                    selectedDecoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
-                    markerDecoration: const BoxDecoration(
-                      color: Colors.orange,
+                    markerDecoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -316,7 +318,7 @@ class _TrackerPageState extends State<TrackerPage>
             Bubble(
               title: "Add Reminder",
               iconColor: Colors.white,
-              bubbleColor: Colors.blue,
+              bubbleColor: Theme.of(context).colorScheme.secondary,
               icon: Icons.add_alert,
               titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {
@@ -327,7 +329,7 @@ class _TrackerPageState extends State<TrackerPage>
             Bubble(
               title: "Add Photo",
               iconColor: Colors.white,
-              bubbleColor: Colors.blue,
+              bubbleColor: Theme.of(context).colorScheme.secondary,
               icon: Icons.add_a_photo,
               titleStyle: const TextStyle(fontSize: 16, color: Colors.white),
               onPress: () {},
@@ -355,7 +357,7 @@ class _TrackerPageState extends State<TrackerPage>
             }
           },
           iconColor: Colors.white,
-          backGroundColor: Colors.blue,
+          backGroundColor: Theme.of(context).colorScheme.secondary,
           animatedIconData: AnimatedIcons.add_event,
         ),
       ),
