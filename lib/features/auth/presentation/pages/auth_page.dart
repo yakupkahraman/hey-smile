@@ -50,7 +50,29 @@ class _AuthPageState extends State<AuthPage>
             children: [
               Column(
                 children: [
-                  const SizedBox(height: 100),
+                  SizedBox(
+                    height: 200,
+                    child: OverflowBox(
+                      maxHeight: 300,
+                      maxWidth: 300,
+                      child: AnimatedBuilder(
+                        animation: _scaleAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _scaleAnimation.value,
+                            child: child,
+                          );
+                        },
+                        child: Lottie.asset(
+                          'assets/lottie/heysmile_logo.json',
+                          width: 300,
+                          height: 300,
+                          fit: BoxFit.contain,
+                          repeat: false,
+                        ),
+                      ),
+                    ),
+                  ),
                   RichText(
                     text: TextSpan(
                       style: TextStyle(
@@ -60,7 +82,9 @@ class _AuthPageState extends State<AuthPage>
                       children: [
                         TextSpan(
                           text: 'hey',
-                          style: TextStyle(color: Colors.blue),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                         ),
                         TextSpan(
                           text: 'SMILE',
@@ -69,24 +93,8 @@ class _AuthPageState extends State<AuthPage>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 24),
+
                   // Lottie Animation with Scale
-                  AnimatedBuilder(
-                    animation: _scaleAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: child,
-                      );
-                    },
-                    child: Lottie.asset(
-                      'assets/lottie/heysmile_logo.json',
-                      width: 250,
-                      height: 250,
-                      fit: BoxFit.contain,
-                      repeat: false,
-                    ),
-                  ),
                 ],
               ),
               Column(

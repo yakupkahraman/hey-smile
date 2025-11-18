@@ -89,10 +89,10 @@ class ShellPage extends StatelessWidget {
                         label: 'Treatments',
                         isSelected: currentLocation == '/treatments',
                         onTap: () => context.go('/treatments'),
-                        unSelectedIcon: PhosphorIcons.handHeart(
+                        unSelectedIcon: PhosphorIcons.heartbeat(
                           PhosphorIconsStyle.regular,
                         ),
-                        selectedIcon: PhosphorIcons.handHeart(
+                        selectedIcon: PhosphorIcons.heartbeat(
                           PhosphorIconsStyle.fill,
                         ),
                       ),
