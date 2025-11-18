@@ -5,10 +5,10 @@ import 'package:hey_smile/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:hey_smile/features/camera/presentation/pages/camera_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/shell_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/home_page.dart';
-import 'package:hey_smile/features/home/presentation/pages/tracker_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/capture_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/treatments_page.dart';
 import 'package:hey_smile/features/home/presentation/pages/shop_page.dart';
+import 'package:hey_smile/features/tracker/presentation/pages/tracker_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RouterManager {
