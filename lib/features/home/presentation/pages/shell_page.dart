@@ -139,36 +139,147 @@ class ShellPage extends StatelessWidget {
   );
 
   Drawer drawer(BuildContext context) => Drawer(
-    child: Column(
-      children: [
-        ListTile(
-          leading: const Icon(Icons.exit_to_app),
-          title: const Text('Çıkış Yap'),
-          onTap: () async {
-            try {
-              await context.read<AuthProvider>().logout();
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Başarıyla çıkış yapıldı'),
-                    backgroundColor: Colors.green,
+    child: SafeArea(
+      child: Column(
+        children: [
+          // Header
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 70, left: 10, bottom: 10),
+            decoration: BoxDecoration(color: ThemeConstants.primaryColor),
+            child: SafeArea(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'hey',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'SMILE',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
                   ),
-                );
-                context.go('/auth');
-              }
-            } catch (e) {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(e.toString()),
-                    backgroundColor: Colors.red,
+                ],
+              ),
+            ),
+          ),
+          // Menu Items
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                ListTile(
+                  leading: PhosphorIcon(
+                    PhosphorIcons.user(PhosphorIconsStyle.regular),
                   ),
-                );
+                  title: const Text('Profile'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Navigate to profile page
+                  },
+                ),
+                ListTile(
+                  leading: PhosphorIcon(
+                    PhosphorIcons.chartLine(PhosphorIconsStyle.regular),
+                  ),
+                  title: const Text('Analysis'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Navigate to analysis page
+                  },
+                ),
+                ListTile(
+                  leading: PhosphorIcon(
+                    PhosphorIcons.translate(PhosphorIconsStyle.regular),
+                  ),
+                  title: const Text('Language'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Show language picker
+                  },
+                ),
+                ListTile(
+                  leading: PhosphorIcon(
+                    PhosphorIcons.bellRinging(PhosphorIconsStyle.regular),
+                  ),
+                  title: const Text('Notifications'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Show language picker
+                  },
+                ),
+                ListTile(
+                  leading: PhosphorIcon(
+                    PhosphorIcons.lock(PhosphorIconsStyle.regular),
+                  ),
+                  title: const Text('Privacy & Terms'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Show privacy & terms
+                  },
+                ),
+                ListTile(
+                  leading: PhosphorIcon(
+                    PhosphorIcons.envelope(PhosphorIconsStyle.regular),
+                  ),
+                  title: const Text('Contact Us'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    // TODO: Navigate to contact page
+                  },
+                ),
+              ],
+            ),
+          ),
+          // Logout at bottom
+          const Divider(height: 1),
+          ListTile(
+            leading: PhosphorIcon(
+              PhosphorIcons.signOut(PhosphorIconsStyle.regular),
+              color: Colors.red,
+            ),
+            title: const Text('Log Out', style: TextStyle(color: Colors.red)),
+            onTap: () async {
+              try {
+                await context.read<AuthProvider>().logout();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Başarıyla çıkış yapıldı'),
+                      backgroundColor: Colors.green,
+                    ),
+                  );
+                  context.go('/auth');
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(e.toString()),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               }
-            }
-          },
-        ),
-      ],
+            },
+          ),
+          const SizedBox(height: 10),
+        ],
+      ),
     ),
   );
 }
