@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hey_smile/core/constants.dart';
 import 'package:hey_smile/core/widgets/navbar_item.dart';
+import 'package:hey_smile/features/auth/presentation/providers/auth_provider.dart';
 import 'package:hey_smile/features/home/presentation/providers/page_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -142,8 +143,30 @@ class ShellPage extends StatelessWidget {
       children: [
         ListTile(
           leading: const Icon(Icons.exit_to_app),
-          title: const Text('exit'),
-          onTap: () => context.go('/auth'),
+          title: const Text('Çıkış Yap'),
+          onTap: () async {
+            try {
+              await context.read<AuthProvider>().logout();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Başarıyla çıkış yapıldı'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                context.go('/auth');
+              }
+            } catch (e) {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(e.toString()),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
         ),
       ],
     ),

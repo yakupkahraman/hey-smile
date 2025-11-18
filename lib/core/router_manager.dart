@@ -19,19 +19,26 @@ class RouterManager {
 
   static final GoRouter router = GoRouter(
     initialLocation: '/home',
-    /*redirect: (context, state) async {
+    redirect: (context, state) async {
       final loggedIn = await isUserLoggedIn();
 
-      final authRoutes = ['/auth', '/authgate', '/onboarding'];
+      final authRoutes = ['/auth'];
       final isAuthRoute = authRoutes.any(
         (route) => state.matchedLocation.startsWith(route),
       );
 
+      // Kullanıcı giriş yapmamışsa ve auth sayfasında değilse, auth'a yönlendir
       if (!loggedIn && !isAuthRoute) {
-        return '/authgate';
+        return '/auth';
       }
+
+      // Kullanıcı giriş yapmışsa ve auth sayfasındaysa, home'a yönlendir
+      if (loggedIn && isAuthRoute) {
+        return '/home';
+      }
+
       return null;
-    },*/
+    },
     routes: [
       ShellRoute(
         builder: (context, state, child) => ShellPage(child: child),

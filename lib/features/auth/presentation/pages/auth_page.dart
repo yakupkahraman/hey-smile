@@ -2,9 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hey_smile/core/constants.dart';
 import 'package:hey_smile/features/auth/presentation/widgets/my_button.dart';
+import 'package:lottie/lottie.dart';
 
-class AuthPage extends StatelessWidget {
+class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
+
+  @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _scaleController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 1.5, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeInOut),
+    );
+
+    _scaleController.forward();
+  }
+
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +67,24 @@ class AuthPage extends StatelessWidget {
                           style: TextStyle(color: ThemeConstants.primaryColor),
                         ),
                       ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  // Lottie Animation with Scale
+                  AnimatedBuilder(
+                    animation: _scaleAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: child,
+                      );
+                    },
+                    child: Lottie.asset(
+                      'assets/lottie/heysmile_logo.json',
+                      width: 250,
+                      height: 250,
+                      fit: BoxFit.contain,
+                      repeat: false,
                     ),
                   ),
                 ],
