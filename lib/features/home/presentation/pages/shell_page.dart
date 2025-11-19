@@ -244,7 +244,7 @@ class ShellPage extends StatelessWidget {
                   title: const Text('Contact Us'),
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Navigate to contact page
+                    context.go('/contact');
                   },
                 ),
               ],
