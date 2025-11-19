@@ -31,6 +31,7 @@ class _LivenessPageState extends State<LivenessPage> {
 
   bool _isCameraInitialized = false;
   bool _isProcessing = false;
+  bool _isSpeaking = false; // TTS konuşma durumu kontrolü
   LivenessStep? _lastSpokenStep;
   String? _lastSpokenCountdown;
   LivenessStep? _lastCapturedStep;
@@ -54,6 +55,12 @@ class _LivenessPageState extends State<LivenessPage> {
       _initializeMLKit();
       await _initializeTTS();
       _startImageStream();
+
+      // Başlangıç yönlendirmesi
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted && !_isSpeaking) {
+        _tts.speak("Keep your face straight");
+      }
     } catch (e) {
       log("Initialization error: $e");
       _showError("Kamera başlatılamadı");
@@ -85,10 +92,24 @@ class _LivenessPageState extends State<LivenessPage> {
   }
 
   Future<void> _initializeTTS() async {
-    await _tts.setLanguage('tr-TR');
+    await _tts.setLanguage('en-US');
     await _tts.setVolume(1.0);
     await _tts.setSpeechRate(0.5);
     await _tts.setPitch(1.0);
+
+    // TTS başlangıç ve bitiş callback'lerini ayarla
+    _tts.setStartHandler(() {
+      _isSpeaking = true;
+    });
+
+    _tts.setCompletionHandler(() {
+      _isSpeaking = false;
+    });
+
+    _tts.setErrorHandler((msg) {
+      _isSpeaking = false;
+      log("TTS error: $msg");
+    });
   }
 
   void _startImageStream() {
@@ -178,6 +199,13 @@ class _LivenessPageState extends State<LivenessPage> {
 
         // Sadece adım değişikliklerinde TTS çalıştır
         if (newState.currentStep != currentStep) {
+          // Önceki konuşma varsa durdur ve bitir
+          if (_isSpeaking) {
+            await _tts.stop();
+            _isSpeaking = false;
+            // Kısa bir bekleme ekle ki TTS düzgün kapansın
+            await Future.delayed(const Duration(milliseconds: 100));
+          }
           await _speakStepChange(newState.currentStep);
         }
 
@@ -185,12 +213,16 @@ class _LivenessPageState extends State<LivenessPage> {
         final guidance = newState.guidance.trim();
         if (guidance.length == 1 &&
             (guidance == '1' || guidance == '2' || guidance == '3')) {
-          if (_lastSpokenCountdown != guidance) {
+          // Sadece countdown değişmişse ve TTS konuşmuyorsa çal
+          if (_lastSpokenCountdown != guidance && !_isSpeaking) {
             _lastSpokenCountdown = guidance;
+
             try {
-              await _tts.speak(guidance);
+              // await kullanmadan çalıştır ki bloklamasın
+              _tts.speak(guidance);
             } catch (e) {
               log("TTS countdown error: $e");
+              _isSpeaking = false;
             }
           }
         }
@@ -334,29 +366,33 @@ class _LivenessPageState extends State<LivenessPage> {
     String message;
     switch (step) {
       case LivenessStep.straight:
-        message = "Önü gösterin";
+        message = "Show front";
         break;
       case LivenessStep.right:
-        message = "Sağı gösterin";
+        message = "Show right";
         break;
       case LivenessStep.left:
-        message = "Solu gösterin";
+        message = "Show left";
         break;
       case LivenessStep.top:
-        message = "Tepeyi gösterin";
+        message = "Show top";
         break;
       case LivenessStep.back:
-        message = "Arkayı gösterin";
+        message = "Show back";
         break;
       case LivenessStep.completed:
-        message = "Tamamlandı";
+        message = "Completed";
         break;
     }
 
     try {
+      // Konuşmayı başlat ve tamamen bitene kadar bekle
       await _tts.speak(message);
+      // Konuşmanın tamamen bitmesi için ekstra bekleme
+      await Future.delayed(const Duration(milliseconds: 300));
     } catch (e) {
       log("TTS error: $e");
+      _isSpeaking = false;
     }
   }
 

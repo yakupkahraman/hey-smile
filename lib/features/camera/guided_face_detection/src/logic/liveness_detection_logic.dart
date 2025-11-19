@@ -9,9 +9,9 @@ import 'package:hey_smile/features/camera/guided_face_detection/src/models/liven
 /// Core logic for liveness detection validation
 class LivenessDetectionLogic {
   static int _stepFrameCounter = 0;
-  // Use 4 required increments so we can show a 3-2-1 countdown
-  // (1..3 shown) and then advance on the 4th tick.
-  static const int _requiredFrames = 4;
+  static bool _countdownCompleted = false;
+  // Countdown frames: 0-1->3, 2-3->2, 4-5->1, then verify position
+  // Each number shown for 2 frames (~600-800ms each), total ~2 seconds per position
 
   static LivenessState getState(
     List<Face> faces,
@@ -37,16 +37,18 @@ class LivenessDetectionLogic {
         currentStep != LivenessStep.top &&
         currentStep != LivenessStep.back) {
       _stepFrameCounter = 0;
+      _countdownCompleted = false;
       return LivenessState.initial(
-        guidance: "Yüzünüz algılanamadı",
+        guidance: "Face not detected",
         currentStep: currentStep,
       );
     }
 
     if (imageSize == null) {
       _stepFrameCounter = 0;
+      _countdownCompleted = false;
       return LivenessState.initial(
-        guidance: "Görüntü boyutu bekleniyor...",
+        guidance: "Waiting for image size...",
         currentStep: currentStep,
       );
     }
@@ -72,18 +74,20 @@ class LivenessDetectionLogic {
 
     if (!_isFaceSizeValid(faceWidth)) {
       _stepFrameCounter = 0;
+      _countdownCompleted = false;
       return LivenessState.initial(
         guidance: faceWidth < Constants.minFaceWidth
-            ? "Lütfen biraz yaklaşın"
-            : "Lütfen biraz uzaklaşın",
+            ? "Please move closer"
+            : "Please move back",
         currentStep: currentStep,
       );
     }
 
     if (!_isFaceCentered(faceCenter, imageCenter)) {
       _stepFrameCounter = 0;
+      _countdownCompleted = false;
       return LivenessState.initial(
-        guidance: "Lütfen yüzünüzü ortalayın",
+        guidance: "Please center your face",
         currentStep: currentStep,
       );
     }
@@ -116,12 +120,12 @@ class LivenessDetectionLogic {
       case LivenessStep.top:
       case LivenessStep.back:
         return LivenessState.initial(
-          guidance: "İşleniyor...",
+          guidance: "Processing...",
           currentStep: currentStep,
         );
       case LivenessStep.completed:
         return const LivenessState(
-          guidance: "OK - Tüm adımlar tamamlandı! ✓",
+          guidance: "OK - All steps completed! ✓",
           borderColor: Colors.blue,
           currentStep: LivenessStep.completed,
         );
@@ -136,32 +140,60 @@ class LivenessDetectionLogic {
     final isStraight = yaw.abs() < Constants.straightThreshold;
 
     if (isStraight) {
-      _stepFrameCounter++;
-      if (_stepFrameCounter >= _requiredFrames) {
-        _stepFrameCounter = 0;
-        final nextStep = config.getNextStep(currentStep);
-        if (nextStep != null) {
-          return LivenessState(
-            guidance: "Harika! Şimdi ${_getNextStepGuidance(nextStep)}",
-            borderColor: Colors.orange,
-            currentStep: nextStep,
-          );
+      // Countdown tamamlanmadıysa sayım yap
+      if (!_countdownCompleted) {
+        _stepFrameCounter++;
+
+        // Countdown: 0-1->3, 2-3->2, 4-5->1 (her sayı 2 frame)
+        String countdownText;
+        if (_stepFrameCounter <= 1) {
+          countdownText = '3';
+        } else if (_stepFrameCounter <= 3) {
+          countdownText = '2';
+        } else if (_stepFrameCounter <= 5) {
+          countdownText = '1';
+        } else {
+          // Countdown tamamlandı, şimdi pozisyonu doğrula
+          _countdownCompleted = true;
+          _stepFrameCounter = 0;
+          countdownText = 'Hold...';
         }
+
+        return LivenessState(
+          guidance: countdownText,
+          borderColor: Colors.green,
+          currentStep: currentStep,
+        );
+      } else {
+        // Countdown tamamlandı, hızlıca pozisyonu kontrol et
+        _stepFrameCounter++;
+
+        // 2 frame daha bekle (hızlı kontrol)
+        if (_stepFrameCounter >= 2) {
+          _stepFrameCounter = 0;
+          _countdownCompleted = false;
+          final nextStep = config.getNextStep(currentStep);
+          if (nextStep != null) {
+            return LivenessState(
+              guidance: "Great! Now ${_getNextStepGuidance(nextStep)}",
+              borderColor: Colors.orange,
+              currentStep: nextStep,
+            );
+          }
+        }
+
+        return LivenessState(
+          guidance: 'Hold...',
+          borderColor: Colors.green,
+          currentStep: currentStep,
+        );
       }
-      // Compute remaining countdown number (3,2,1)
-      final remaining = _requiredFrames - _stepFrameCounter;
-      return LivenessState(
-        // guidance carries the remaining number as a string so UI/TTS can
-        // perform a spoken/countdown behavior like "3 2 1"
-        guidance: remaining.toString(),
-        borderColor: Colors.green,
-        currentStep: currentStep,
-      );
     }
 
     _stepFrameCounter = 0;
+    _countdownCompleted = false;
     return LivenessState.initial(
-      guidance: "Lütfen yüzünüzü düz tutun",
+      guidance: "Please keep your face straight",
       currentStep: currentStep,
     );
   }
@@ -174,29 +206,60 @@ class LivenessDetectionLogic {
     final isLookingRight = yaw < -Constants.turnThreshold;
 
     if (isLookingRight) {
-      _stepFrameCounter++;
-      if (_stepFrameCounter >= _requiredFrames) {
-        _stepFrameCounter = 0;
-        final nextStep = config.getNextStep(currentStep);
-        if (nextStep != null) {
-          return LivenessState(
-            guidance: "Mükemmel! Şimdi ${_getNextStepGuidance(nextStep)}",
-            borderColor: Colors.orange,
-            currentStep: nextStep,
-          );
+      // Countdown tamamlanmadıysa sayım yap
+      if (!_countdownCompleted) {
+        _stepFrameCounter++;
+
+        // Countdown: 0-1->3, 2-3->2, 4-5->1 (her sayı 2 frame)
+        String countdownText;
+        if (_stepFrameCounter <= 1) {
+          countdownText = '3';
+        } else if (_stepFrameCounter <= 3) {
+          countdownText = '2';
+        } else if (_stepFrameCounter <= 5) {
+          countdownText = '1';
+        } else {
+          // Countdown tamamlandı, şimdi pozisyonu doğrula
+          _countdownCompleted = true;
+          _stepFrameCounter = 0;
+          countdownText = 'Hold...';
         }
+
+        return LivenessState(
+          guidance: countdownText,
+          borderColor: Colors.green,
+          currentStep: currentStep,
+        );
+      } else {
+        // Countdown tamamlandı, hızlıca pozisyonu kontrol et
+        _stepFrameCounter++;
+
+        // 2 frame daha bekle (hızlı kontrol)
+        if (_stepFrameCounter >= 2) {
+          _stepFrameCounter = 0;
+          _countdownCompleted = false;
+          final nextStep = config.getNextStep(currentStep);
+          if (nextStep != null) {
+            return LivenessState(
+              guidance: "Perfect! Now ${_getNextStepGuidance(nextStep)}",
+              borderColor: Colors.orange,
+              currentStep: nextStep,
+            );
+          }
+        }
+
+        return LivenessState(
+          guidance: 'Hold...',
+          borderColor: Colors.green,
+          currentStep: currentStep,
+        );
       }
-      final remaining = _requiredFrames - _stepFrameCounter;
-      return LivenessState(
-        guidance: remaining.toString(),
-        borderColor: Colors.green,
-        currentStep: currentStep,
-      );
     }
 
     _stepFrameCounter = 0;
+    _countdownCompleted = false;
     return LivenessState.initial(
-      guidance: "BAŞINIZI SAĞA ÇEVİRİN",
+      guidance: "TURN YOUR HEAD TO THE RIGHT",
       currentStep: currentStep,
     );
   }
@@ -209,29 +272,60 @@ class LivenessDetectionLogic {
     final isLookingLeft = yaw > Constants.turnThreshold;
 
     if (isLookingLeft) {
-      _stepFrameCounter++;
-      if (_stepFrameCounter >= _requiredFrames) {
-        _stepFrameCounter = 0;
-        final nextStep = config.getNextStep(currentStep);
-        if (nextStep != null) {
-          return LivenessState(
-            guidance: "Süper! Şimdi ${_getNextStepGuidance(nextStep)}",
-            borderColor: Colors.orange,
-            currentStep: nextStep,
-          );
+      // Countdown tamamlanmadıysa sayım yap
+      if (!_countdownCompleted) {
+        _stepFrameCounter++;
+
+        // Countdown: 0-1->3, 2-3->2, 4-5->1 (her sayı 2 frame)
+        String countdownText;
+        if (_stepFrameCounter <= 1) {
+          countdownText = '3';
+        } else if (_stepFrameCounter <= 3) {
+          countdownText = '2';
+        } else if (_stepFrameCounter <= 5) {
+          countdownText = '1';
+        } else {
+          // Countdown tamamlandı, şimdi pozisyonu doğrula
+          _countdownCompleted = true;
+          _stepFrameCounter = 0;
+          countdownText = 'Hold...';
         }
+
+        return LivenessState(
+          guidance: countdownText,
+          borderColor: Colors.green,
+          currentStep: currentStep,
+        );
+      } else {
+        // Countdown tamamlandı, hızlıca pozisyonu kontrol et
+        _stepFrameCounter++;
+
+        // 2 frame daha bekle (hızlı kontrol)
+        if (_stepFrameCounter >= 2) {
+          _stepFrameCounter = 0;
+          _countdownCompleted = false;
+          final nextStep = config.getNextStep(currentStep);
+          if (nextStep != null) {
+            return LivenessState(
+              guidance: "Excellent! Now ${_getNextStepGuidance(nextStep)}",
+              borderColor: Colors.orange,
+              currentStep: nextStep,
+            );
+          }
+        }
+
+        return LivenessState(
+          guidance: 'Hold...',
+          borderColor: Colors.green,
+          currentStep: currentStep,
+        );
       }
-      final remaining = _requiredFrames - _stepFrameCounter;
-      return LivenessState(
-        guidance: remaining.toString(),
-        borderColor: Colors.green,
-        currentStep: currentStep,
-      );
     }
 
     _stepFrameCounter = 0;
+    _countdownCompleted = false;
     return LivenessState.initial(
-      guidance: "BAŞINIZI SOLA ÇEVİRİN",
+      guidance: "TURN YOUR HEAD TO THE LEFT",
       currentStep: currentStep,
     );
   }
@@ -239,15 +333,15 @@ class LivenessDetectionLogic {
   static String _getNextStepGuidance(LivenessStep step) {
     switch (step) {
       case LivenessStep.right:
-        return "başınızı SAĞA çevirin";
+        return "turn your head to the RIGHT";
       case LivenessStep.left:
-        return "başınızı SOLA çevirin";
+        return "turn your head to the LEFT";
       case LivenessStep.top:
-        return "başınızı AŞAĞI eğin (tepesini gösterin)";
+        return "tilt your head DOWN (show top)";
       case LivenessStep.back:
-        return "başınızı ARKAYA çevirin";
+        return "turn your head to the BACK";
       case LivenessStep.completed:
-        return "tamamlandı";
+        return "completed";
       default:
         return step.guidance;
     }
@@ -266,7 +360,7 @@ class LivenessDetectionLogic {
     }
 
     return LivenessState.initial(
-      guidance: "Beklenmeyen durum",
+      guidance: "Unexpected state",
       currentStep: currentStep,
     );
   }
@@ -282,30 +376,61 @@ class LivenessDetectionLogic {
       final isShowingTop = pitch < -30.0;
 
       if (isShowingTop) {
-        _stepFrameCounter++;
-        if (_stepFrameCounter >= _requiredFrames) {
-          _stepFrameCounter = 0;
-          final nextStep = config.getNextStep(currentStep);
-          if (nextStep != null) {
-            return LivenessState(
-              guidance: "Mükemmel! Şimdi ${_getNextStepGuidance(nextStep)}",
-              borderColor: Colors.orange,
-              currentStep: nextStep,
-            );
+        // Countdown tamamlanmadıysa sayım yap
+        if (!_countdownCompleted) {
+          _stepFrameCounter++;
+
+          // Countdown: 0-1->3, 2-3->2, 4-5->1 (her sayı 2 frame)
+          String countdownText;
+          if (_stepFrameCounter <= 1) {
+            countdownText = '3';
+          } else if (_stepFrameCounter <= 3) {
+            countdownText = '2';
+          } else if (_stepFrameCounter <= 5) {
+            countdownText = '1';
+          } else {
+            // Countdown tamamlandı, şimdi pozisyonu doğrula
+            _countdownCompleted = true;
+            _stepFrameCounter = 0;
+            countdownText = 'Hold...';
           }
+
+          return LivenessState(
+            guidance: countdownText,
+            borderColor: Colors.green,
+            currentStep: currentStep,
+          );
+        } else {
+          // Countdown tamamlandı, hızlıca pozisyonu kontrol et
+          _stepFrameCounter++;
+
+          // 2 frame daha bekle (hızlı kontrol)
+          if (_stepFrameCounter >= 2) {
+            _stepFrameCounter = 0;
+            _countdownCompleted = false;
+            final nextStep = config.getNextStep(currentStep);
+            if (nextStep != null) {
+              return LivenessState(
+                guidance: "Perfect! Now ${_getNextStepGuidance(nextStep)}",
+                borderColor: Colors.orange,
+                currentStep: nextStep,
+              );
+            }
+          }
+
+          return LivenessState(
+            guidance: 'Hold...',
+            borderColor: Colors.green,
+            currentStep: currentStep,
+          );
         }
-        final remaining = _requiredFrames - _stepFrameCounter;
-        return LivenessState(
-          guidance: remaining.toString(),
-          borderColor: Colors.green,
-          currentStep: currentStep,
-        );
       }
     }
 
     _stepFrameCounter = 0;
+    _countdownCompleted = false;
     return LivenessState.initial(
-      guidance: "BAŞINIZI AŞAĞI EĞİN",
+      guidance: "TILT YOUR HEAD DOWN",
       currentStep: currentStep,
     );
   }
@@ -321,12 +446,13 @@ class LivenessDetectionLogic {
       final yaw = face.headEulerAngleY ?? 0.0;
       String direction = "";
       if (yaw.abs() < 60) {
-        direction = " Daha fazla dönün!";
+        direction = " Turn more!";
       }
 
       _stepFrameCounter = 0;
+      _countdownCompleted = false;
       return LivenessState.initial(
-        guidance: "BAŞINIZI ARKAYA ÇEVİRİN $direction",
+        guidance: "TURN YOUR HEAD TO THE BACK$direction",
         currentStep: currentStep,
       );
     }
@@ -336,32 +462,63 @@ class LivenessDetectionLogic {
       final isShowingBack = _validateBackPose(pose);
 
       if (isShowingBack) {
-        _stepFrameCounter++;
-        if (_stepFrameCounter >= _requiredFrames) {
-          _stepFrameCounter = 0;
-          final nextStep = config.getNextStep(currentStep);
-          if (nextStep != null) {
-            return LivenessState(
-              guidance: "OK - Tüm adımlar tamamlandı! ✓",
-              borderColor: Colors.orange,
-              currentStep: nextStep,
-            );
+        // Countdown tamamlanmadıysa sayım yap
+        if (!_countdownCompleted) {
+          _stepFrameCounter++;
+
+          // Countdown: 0-1->3, 2-3->2, 4-5->1 (her sayı 2 frame)
+          String countdownText;
+          if (_stepFrameCounter <= 1) {
+            countdownText = '3';
+          } else if (_stepFrameCounter <= 3) {
+            countdownText = '2';
+          } else if (_stepFrameCounter <= 5) {
+            countdownText = '1';
+          } else {
+            // Countdown tamamlandı, şimdi pozisyonu doğrula
+            _countdownCompleted = true;
+            _stepFrameCounter = 0;
+            countdownText = 'Hold...';
           }
+
+          return LivenessState(
+            guidance: countdownText,
+            borderColor: Colors.green,
+            currentStep: currentStep,
+          );
+        } else {
+          // Countdown tamamlandı, hızlıca pozisyonu kontrol et
+          _stepFrameCounter++;
+
+          // 2 frame daha bekle (hızlı kontrol)
+          if (_stepFrameCounter >= 2) {
+            _stepFrameCounter = 0;
+            _countdownCompleted = false;
+            final nextStep = config.getNextStep(currentStep);
+            if (nextStep != null) {
+              return LivenessState(
+                guidance: "OK - All steps completed! ✓",
+                borderColor: Colors.orange,
+                currentStep: nextStep,
+              );
+            }
+          }
+
+          return LivenessState(
+            guidance: 'Hold...',
+            borderColor: Colors.green,
+            currentStep: currentStep,
+          );
         }
-        final remaining = _requiredFrames - _stepFrameCounter;
-        return LivenessState(
-          guidance: remaining.toString(),
-          borderColor: Colors.green,
-          currentStep: currentStep,
-        );
       }
     }
 
     _stepFrameCounter = 0;
+    _countdownCompleted = false;
     return LivenessState.initial(
       guidance: poses.isEmpty
-          ? "Vücudunuzu çerçevede tutun ve başınızı ARKAYA çevirin"
-          : "Başınızı tam ARKAYA çevirin (ense gösterin)",
+          ? "Keep your body in frame and turn your head BACK"
+          : "Turn your head completely BACK (show neck)",
       currentStep: currentStep,
     );
   }
