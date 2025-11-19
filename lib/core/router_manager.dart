@@ -10,6 +10,7 @@ import 'package:hey_smile/features/threatments/presentation/pages/treatments_pag
 import 'package:hey_smile/features/shop/presentation/pages/shop_page.dart';
 import 'package:hey_smile/features/tracker/presentation/pages/tracker_page.dart';
 import 'package:hey_smile/features/profile/presentation/pages/profile_page.dart';
+import 'package:hey_smile/features/profile/presentation/pages/analysis_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class RouterManager {
@@ -68,6 +69,11 @@ class RouterManager {
             path: '/profile',
             pageBuilder: (context, state) =>
                 const NoTransitionPage(child: ProfilePage()),
+          ),
+          GoRoute(
+            path: '/analysis',
+            pageBuilder: (context, state) =>
+                const NoTransitionPage(child: AnalysisPage()),
           ),
         ],
       ),

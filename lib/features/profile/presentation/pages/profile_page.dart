@@ -373,14 +373,14 @@ class _ProfilePageState extends State<ProfilePage> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            ThemeConstants.primaryColor,
-            ThemeConstants.primaryColor.withOpacity(0.8),
+            ThemeConstants.secondaryColor,
+            ThemeConstants.secondaryColor.withOpacity(0.8),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: ThemeConstants.primaryColor.withOpacity(0.3),
+            color: ThemeConstants.secondaryColor.withOpacity(0.3),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -452,7 +452,7 @@ class _ProfilePageState extends State<ProfilePage> {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: hasAnswer
-                ? ThemeConstants.primaryColor.withOpacity(0.3)
+                ? ThemeConstants.secondaryColor.withOpacity(0.3)
                 : Colors.grey.withOpacity(0.2),
             width: 1,
           ),
@@ -470,14 +470,14 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: hasAnswer
-                    ? ThemeConstants.primaryColor.withOpacity(0.1)
+                    ? ThemeConstants.secondaryColor.withOpacity(0.1)
                     : Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: PhosphorIcon(
                 icon,
                 color: hasAnswer
-                    ? ThemeConstants.primaryColor
+                    ? ThemeConstants.secondaryColor
                     : Colors.grey[600],
                 size: 24,
               ),
@@ -511,7 +511,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             PhosphorIcon(
               PhosphorIcons.pencilSimple(PhosphorIconsStyle.regular),
-              color: ThemeConstants.primaryColor,
+              color: ThemeConstants.secondaryColor,
               size: 20,
             ),
           ],
@@ -584,7 +584,7 @@ class _ProfilePageState extends State<ProfilePage> {
         style: const TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.bold,
-          color: ThemeConstants.primaryColor,
+          color: ThemeConstants.secondaryColor,
         ),
       ),
     );

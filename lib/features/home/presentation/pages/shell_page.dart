@@ -201,10 +201,10 @@ class ShellPage extends StatelessWidget {
                   leading: PhosphorIcon(
                     PhosphorIcons.chartLine(PhosphorIconsStyle.regular),
                   ),
-                  title: const Text('Analysis'),
+                  title: const Text('Medical Assessment'),
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Navigate to analysis page
+                    context.go('/analysis');
                   },
                 ),
                 ListTile(
