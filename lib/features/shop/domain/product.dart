@@ -3,11 +3,13 @@ class Product {
   final double price;
   final double rating;
   final String imageUrl;
+  final String? usageFrequency; // Örnek: "3 günde bir alınır"
 
   Product({
     required this.title,
     required this.price,
     required this.rating,
     required this.imageUrl,
+    this.usageFrequency,
   });
 }

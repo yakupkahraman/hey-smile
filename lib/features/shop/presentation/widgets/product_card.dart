@@ -1,10 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:hey_smile/features/shop/domain/product.dart';
+import 'package:hey_smile/features/tracker/data/tracker_service.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final Product product;
 
   const ProductCard({super.key, required this.product});
+
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  final TrackerService _trackerService = TrackerService();
+  bool _isAddingReminder = false;
+
+  Future<void> _addProductReminder() async {
+    setState(() {
+      _isAddingReminder = true;
+    });
+
+    try {
+      await _trackerService.createReminder(
+        title: widget.product.title,
+        content: widget.product.usageFrequency ?? 'No usage frequency info',
+        date: DateTime.now(),
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Reminder added successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to add reminder: $e'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isAddingReminder = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,52 +66,89 @@ class ProductCard extends StatelessWidget {
           // Product Image
           Expanded(
             flex: 3,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
-              ),
-              child: product.imageUrl.isNotEmpty
-                  ? Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          color: Colors.grey[300],
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
-                                  : null,
-                            ),
-                          ),
-                        );
-                      },
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(12),
+                  ),
+                  child: widget.product.imageUrl.isNotEmpty
+                      ? Image.network(
+                          widget.product.imageUrl,
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          loadingBuilder: (context, child, loadingProgress) {
+                            if (loadingProgress == null) return child;
+                            return Container(
+                              color: Colors.grey[300],
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  value:
+                                      loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                            loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              ),
+                            );
+                          },
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: Colors.grey[300],
+                              child: Center(
+                                child: Icon(
+                                  Icons.broken_image_outlined,
+                                  size: 64,
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      : Container(
                           color: Colors.grey[300],
                           child: Center(
                             child: Icon(
-                              Icons.broken_image_outlined,
+                              Icons.shopping_bag_outlined,
                               size: 64,
                               color: Colors.grey[400],
                             ),
                           ),
-                        );
-                      },
-                    )
-                  : Container(
-                      color: Colors.grey[300],
-                      child: Center(
-                        child: Icon(
-                          Icons.shopping_bag_outlined,
-                          size: 64,
-                          color: Colors.grey[400],
                         ),
-                      ),
-                    ),
+                ),
+                // Add Reminder Button
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: _isAddingReminder
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          ),
+                        )
+                      : Material(
+                          color: Colors.black.withOpacity(0.6),
+                          shape: const CircleBorder(),
+                          child: InkWell(
+                            onTap: _addProductReminder,
+                            customBorder: const CircleBorder(),
+                            child: const Padding(
+                              padding: EdgeInsets.all(6.0),
+                              child: Icon(
+                                Icons.add,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                ),
+              ],
             ),
           ),
           // Product Details
@@ -74,7 +160,7 @@ class ProductCard extends StatelessWidget {
               children: [
                 // Title
                 Text(
-                  product.title,
+                  widget.product.title,
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -85,7 +171,7 @@ class ProductCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 // Price and Rating
                 Text(
-                  '\€${product.price.toStringAsFixed(2)}',
+                  '\€${widget.product.price.toStringAsFixed(2)}',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -98,7 +184,7 @@ class ProductCard extends StatelessWidget {
                     const Icon(Icons.star, size: 14, color: Colors.amber),
                     const SizedBox(width: 2),
                     Text(
-                      product.rating.toStringAsFixed(1),
+                      widget.product.rating.toStringAsFixed(1),
                       style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
@@ -116,7 +202,9 @@ class ProductCard extends StatelessWidget {
                       // TODO: Add to cart functionality
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${product.title} added to cart'),
+                          content: Text(
+                            '${widget.product.title} added to cart',
+                          ),
                           duration: const Duration(seconds: 1),
                         ),
                       );
