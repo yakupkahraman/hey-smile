@@ -39,7 +39,7 @@ final List<Product> _sampleProducts = [
     rating: 5,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/12-MONTH-HAIR-CARE-AND-PROTECTION-KIT-300x300.jpg',
-    usageFrequency: '3 günde bir alınır',
+    usageFrequency: 'use once every 3 days',
   ),
   Product(
     title: 'HAIR CARE AND PROTECTION 6 MONTH KIT',
@@ -47,7 +47,7 @@ final List<Product> _sampleProducts = [
     rating: 5,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/0o913wej-300x300.png',
-    usageFrequency: '2 günde bir alınır',
+    usageFrequency: 'use once every 2 days',
   ),
   Product(
     title: 'HAIR CARE AND PROTECTION 3 MONTH KIT',
@@ -55,7 +55,7 @@ final List<Product> _sampleProducts = [
     rating: 5,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/3Aylik_Trans-2.png',
-    usageFrequency: 'Günde bir alınır',
+    usageFrequency: 'use once every day',
   ),
   Product(
     title: 'REPAIR MESO SERUM SET',
@@ -63,7 +63,7 @@ final List<Product> _sampleProducts = [
     rating: 4.67,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/REPAIR-MESO-SERUM-600x600.jpg',
-    usageFrequency: 'Haftada 2 kez alınır',
+    usageFrequency: 'use twice a week',
   ),
   Product(
     title: 'HAIR CARE SHAMPOO SET',
@@ -71,7 +71,7 @@ final List<Product> _sampleProducts = [
     rating: 5,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/hairCareShampooSet_trans-1-600x600.png',
-    usageFrequency: '3 günde bir alınır',
+    usageFrequency: 'use once every 3 days',
   ),
   Product(
     title: 'MULTIVITAMIN FORTE',
@@ -79,7 +79,7 @@ final List<Product> _sampleProducts = [
     rating: 4.67,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/multivitaminForte_trns-2.png',
-    usageFrequency: 'Günde bir alınır',
+    usageFrequency: 'use once every day',
   ),
   Product(
     title: 'HAIR CARE AND PROTECTION 12 MONTH KIT',
@@ -87,7 +87,7 @@ final List<Product> _sampleProducts = [
     rating: 5,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/12-MONTH-HAIR-CARE-AND-PROTECTION-KIT-300x300.jpg',
-    usageFrequency: '3 günde bir alınır',
+    usageFrequency: 'use once every 3 days',
   ),
   Product(
     title: 'AFTER HAIR TRANSPLANTATION WASH KIT',
@@ -95,6 +95,6 @@ final List<Product> _sampleProducts = [
     rating: 4.67,
     imageUrl:
         'https://cdn-kdlpl.nitrocdn.com/ynmxOtTHILDzwEmfrEfewGmkrrbUSGFv/assets/images/optimized/rev-a1f785b/shop.smilehairclinic.com/wp-content/uploads/2023/07/afterHair_trans-2-600x600.png',
-    usageFrequency: 'Haftada 3 kez alınır',
+    usageFrequency: 'use three times a week',
   ),
 ];

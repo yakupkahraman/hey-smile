@@ -89,7 +89,7 @@ class _TrackerPageState extends State<TrackerPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Reminder\'lar yüklenemedi: $e'),
+            content: Text('reminders didnt uploaded: $e'),
             backgroundColor: Colors.red,
           ),
         );
