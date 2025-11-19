@@ -24,6 +24,13 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _loadData();
+    // Debug: Print user profile photo URL
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = context.read<AuthProvider>();
+      print(
+        'DEBUG: User profile photo URL: ${authProvider.currentUser?.profilePhotoUrl}',
+      );
+    });
   }
 
   Future<void> _loadData() async {
@@ -163,15 +170,20 @@ class _HomePageState extends State<HomePage> {
                     CircleAvatar(
                       radius: 40,
                       backgroundColor: Colors.white,
-                      backgroundImage: user?.profilePhotoUrl != null
-                          ? NetworkImage(user!.profilePhotoUrl!)
+                      backgroundImage:
+                          user?.profilePhotoUrl != null &&
+                              user!.profilePhotoUrl!.isNotEmpty
+                          ? NetworkImage(user.profilePhotoUrl!)
                           : null,
-                      child: user?.profilePhotoUrl == null
+                      child:
+                          user?.profilePhotoUrl == null ||
+                              user!.profilePhotoUrl!.isEmpty
                           ? Text(
                               user?.firstName[0].toUpperCase() ?? 'U',
                               style: const TextStyle(
                                 fontSize: 32,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.black87,
                               ),
                             )
                           : null,

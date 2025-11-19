@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hey_smile/core/constants.dart';
 import 'package:hey_smile/features/auth/data/auth_service.dart';
 import 'package:hey_smile/features/auth/presentation/widgets/my_button.dart';
 import 'package:hey_smile/features/auth/presentation/widgets/my_textfield.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -16,6 +19,7 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _authService = AuthService();
+  final _imagePicker = ImagePicker();
 
   // Controllers
   final _firstNameController = TextEditingController();
@@ -27,6 +31,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
+  File? _profileImage;
 
   @override
   void dispose() {
@@ -55,11 +60,46 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+
+      if (pickedFile != null) {
+        setState(() {
+          _profileImage = File(pickedFile.path);
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Profile photo selected!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error selecting image: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   Future<void> _handleSignUp() async {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Şifreler eşleşmiyor!'),
+          content: Text('Passwords do not match!'),
           backgroundColor: Colors.red,
         ),
       );
@@ -74,7 +114,7 @@ class _SignUpPageState extends State<SignUpPage> {
         _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Lütfen tüm alanları doldurun!'),
+          content: Text('Please fill in all fields!'),
           backgroundColor: Colors.red,
         ),
       );
@@ -93,16 +133,17 @@ class _SignUpPageState extends State<SignUpPage> {
         email: _emailController.text,
         phoneNumber: _phoneController.text,
         password: _passwordController.text,
+        profilePhotoPath: _profileImage?.path,
       );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Kayıt başarılı!'),
+            content: Text(result['message'] ?? 'Registration successful!'),
             backgroundColor: Colors.green,
           ),
         );
-        // Login sayfasına yönlendir
+        // Redirect to login page
         context.go('/auth/login');
       }
     } catch (e) {
@@ -146,18 +187,80 @@ class _SignUpPageState extends State<SignUpPage> {
                   style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 30),
+
+                // Profile Photo Section
+                Center(
+                  child: GestureDetector(
+                    onTap: _pickImage,
+                    child: Stack(
+                      children: [
+                        Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.shade200,
+                            border: Border.all(
+                              color: ThemeConstants.primaryColor,
+                              width: 3,
+                            ),
+                            image: _profileImage != null
+                                ? DecorationImage(
+                                    image: FileImage(_profileImage!),
+                                    fit: BoxFit.cover,
+                                  )
+                                : null,
+                          ),
+                          child: _profileImage == null
+                              ? Icon(
+                                  Icons.person,
+                                  size: 60,
+                                  color: Colors.grey.shade400,
+                                )
+                              : null,
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: ThemeConstants.primaryColor,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Center(
+                  child: Text(
+                    'Tap to select profile photo',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ),
+                const SizedBox(height: 20),
+
                 Row(
                   children: [
                     Expanded(
                       child: MyTextfield(
-                        labelText: 'Ad',
+                        labelText: 'First Name',
                         controller: _firstNameController,
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: MyTextfield(
-                        labelText: 'Soyad',
+                        labelText: 'Last Name',
                         controller: _lastNameController,
                       ),
                     ),
@@ -171,7 +274,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 const SizedBox(height: 10),
                 MyTextfield(
-                  labelText: 'Telefon',
+                  labelText: 'Phone',
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                 ),
@@ -180,20 +283,20 @@ class _SignUpPageState extends State<SignUpPage> {
                   onTap: () => _selectDate(context),
                   child: AbsorbPointer(
                     child: MyTextfield(
-                      labelText: 'Doğum Tarihi (YYYY-MM-DD)',
+                      labelText: 'Date of Birth (YYYY-MM-DD)',
                       controller: _dateOfBirthController,
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
                 MyTextfield(
-                  labelText: 'Şifre',
+                  labelText: 'Password',
                   controller: _passwordController,
                   isObscureText: true,
                 ),
                 const SizedBox(height: 10),
                 MyTextfield(
-                  labelText: 'Şifre Tekrar',
+                  labelText: 'Confirm Password',
                   controller: _confirmPasswordController,
                   isObscureText: true,
                 ),

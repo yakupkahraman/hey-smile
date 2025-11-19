@@ -194,7 +194,7 @@ class ShellPage extends StatelessWidget {
                   title: const Text('Profile'),
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Navigate to profile page
+                    context.go('/profile');
                   },
                 ),
                 ListTile(

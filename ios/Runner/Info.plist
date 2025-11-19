@@ -28,11 +28,13 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>UISupportedInterfaceOrientations</key>
 	<key>NSCameraUsageDescription</key>
 	<string>For face photo capturing</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>For audio recording</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>To select profile photo from gallery</string>
+	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
