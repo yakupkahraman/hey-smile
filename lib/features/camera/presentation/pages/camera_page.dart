@@ -17,7 +17,7 @@ class CameraPage extends StatelessWidget {
         child: ElevatedButton(
           onPressed: () async {
             final provider = LivenessProvider();
-            provider.setConfig(LivenessConfig.faceRotationOnly());
+            provider.setConfig(LivenessConfig.all());
 
             final result = await Navigator.push<List<Uint8List>>(
               context,

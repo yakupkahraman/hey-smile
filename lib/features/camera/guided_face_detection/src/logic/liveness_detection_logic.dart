@@ -372,8 +372,8 @@ class LivenessDetectionLogic {
 
     // Sadece omuzların görünürlüğüne göre arka pozisyonu doğrula
     final shouldersVisible =
-        (leftShoulder != null && leftShoulder.likelihood > 0.3) ||
-        (rightShoulder != null && rightShoulder.likelihood > 0.3);
+        (leftShoulder != null && leftShoulder.likelihood > 0.1) ||
+        (rightShoulder != null && rightShoulder.likelihood > 0.1);
 
     return shouldersVisible;
   }
